@@ -22,12 +22,14 @@ export class ArtworkListComponent implements OnInit {
 
   constructor(private artService: ApiServiceService,
     private filterService: FilterService,
-    private usesService: UsersService
+    private usersService: UsersService
+
   ) {
   }
 
   ngOnInit(): void {
     console.log(this.onlyFavorites);
+   
 
     if (this.onlyFavorites != 'favorites') {
       this.artService.getArtWorks().pipe(
@@ -37,8 +39,18 @@ export class ArtworkListComponent implements OnInit {
     }
     else {
       // Demanar les favorites
-      this.artService.getArtworksFromIDs(['3752', '11294', '6010'])
+      
+      if(!this.usersService.getUserId()){
+        //mostrem un pop up indiquant q per a accedir a les favorites ha d'estar registrat
+        console.log("no user")
+
+
+      }else{
+        this.artService.getArtworksFromIDs(['3752', '11294', '6010'])
         .subscribe((artworkList: IArtwork[]) => this.quadres = artworkList);
+        
+      }
+      
     }
 
 
@@ -52,7 +64,7 @@ export class ArtworkListComponent implements OnInit {
   toggleLike($event: boolean, artwork: IArtwork) {
     console.log($event, artwork);
     artwork.like = !artwork.like;
-    this.usesService.setFavorite(artwork.id + "")
+    this.usersService.setFavorite(artwork.id + "")
   }
 
   quadres: IArtwork[] = [];

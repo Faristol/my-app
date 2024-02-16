@@ -20,24 +20,39 @@ import { map } from 'rxjs';
   styleUrl: './profile.component.css',
 })
 export class ProfileComponent implements OnInit {
-
-  constructor(private formBuilder: FormBuilder, private userService: UsersService) {
-    this.crearFormulario();
+  renderize = true;
+  constructor(
+    private formBuilder: FormBuilder,
+    private userService: UsersService
+  ) {
+    if (!this.userService.getUserId()) {
+      //mostrem un pop up indiquant q per a accedir a les favorites ha d'estar registrat
+      console.log('no user');
+      this.renderize = false;
+    } else {
+      this.crearFormulario();
+    }
   }
 
   formulario!: FormGroup;
 
   ngOnInit(): void {
-    this.userService.isLogged();
-    this.userService.userSubject
-    .pipe(map((p:IUser) => {return {
-      id: p.id, 
-      username: p.username, 
-      full_name: p.full_name,
-      avatar_url: p.avatar_url,
-      website: p.website
-    }}))
-    .subscribe(profile => this.formulario.setValue(profile))
+    if (this.userService.getUserId()) {
+      this.userService.isLogged();
+      this.userService.userSubject
+        .pipe(
+          map((p: IUser) => {
+            return {
+              id: p.id,
+              username: p.username,
+              full_name: p.full_name,
+              avatar_url: p.avatar_url,
+              website: p.website,
+            };
+          })
+        )
+        .subscribe((profile) => this.formulario?.setValue(profile));
+    }
   }
 
   crearFormulario() {
@@ -63,8 +78,6 @@ export class ProfileComponent implements OnInit {
       this.formulario.get('username')!.touched
     );
   }
-
-
 }
 
 function websiteValidator(pattern: string): ValidatorFn {

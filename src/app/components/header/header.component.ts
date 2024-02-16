@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { FilterService } from '../../services/filter.service';
 import { UsersService } from '../../services/users.service';
 import { IUser } from '../../interfaces/user';
+
+
 
 @Component({
   selector: 'app-header',
@@ -14,7 +16,7 @@ import { IUser } from '../../interfaces/user';
 })
 export class HeaderComponent implements OnInit{
 
-  constructor(private filterService: FilterService, private usersService :UsersService){}
+  constructor(private filterService: FilterService, private usersService :UsersService,private router : Router){}
 
   ngOnInit(): void {
       this.usersService.userSubject.subscribe(user => this.user = user);
@@ -30,7 +32,11 @@ export class HeaderComponent implements OnInit{
       $event.preventDefault();
       this.filterService.searchFilter.next(this.filter)
   }
-
-
+  logout(){
+    this.usersService.logout();
+    this.usersService.removeUserId();
+    console.log("entraaaaa")
+    this.router.navigate(['login']);
+  }
 
 }

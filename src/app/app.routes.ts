@@ -3,6 +3,7 @@ import { ArtworkListComponent } from './components/artwork-list/artwork-list.com
 import { ArtworkComponent } from './components/artwork/artwork.component';
 import { LoginComponent } from './components/login/login.component';
 import { ProfileComponent } from './components/profile/profile.component';
+import { RegisterComponent } from './components/register/register.component';
 
 export const routes: Routes = [
   {path: 'artworks', component: ArtworkListComponent},
@@ -10,8 +11,8 @@ export const routes: Routes = [
   {path: 'artwork/:id', component: ArtworkComponent},
   {path: 'profile', component: ProfileComponent},
   {path: 'favorites', redirectTo: 'artworks/favorites'},
-  {path: 'userManagement/:setmode', component: LoginComponent},
-  {path: 'userManagement/:logout', component: LoginComponent},
+  {path: 'login', component: LoginComponent},
+  {path:'register',component: RegisterComponent},
   { path: '**', component: ArtworkListComponent }
 
 ];

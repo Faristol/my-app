@@ -20,15 +20,15 @@
             <a class="nav-link"[routerLink]="['profile']">Profile</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" [routerLink]="['userManagement','login']">Login</a>
+            <a class="nav-link" [routerLink]="['login']">Login</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" [routerLink]="['userManagement','register']">Register</a>
+            <a class="nav-link" [routerLink]="['register']">Register</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" [routerLink]="['userManagement','logout']">Log Out</a>
+            <a class="nav-link" [routerLink]="['/']" (click)="logout()">Log Out</a>
           </li>
-
+          
           <li class="nav-item">
             <a class="nav-link disabled" aria-disabled="true">Disabled</a>
           </li>
