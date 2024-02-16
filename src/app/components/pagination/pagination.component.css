@@ -1,0 +1,28 @@
+.pagination {
+    width: 50%;
+    margin: 0 auto; /* Centrar horizontalmente */
+    display: flex;
+    justify-content: center;
+    justify-content: space-evenly;
+    align-items: center;
+    flex-direction: row; /* Mostrar los elementos horizontalmente */
+    position: sticky;
+    bottom: 20px; /* Ajusta la posición según tu diseño */
+    background-color: #778899;
+    padding: 10px;
+    font-weight: bolder;
+  }
+  
+  .but {
+    padding: 5px 10px;
+    margin: 0 5px;
+    cursor: pointer;
+  }
+  
+  .but[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  .input{
+    width: 20%;
+  }

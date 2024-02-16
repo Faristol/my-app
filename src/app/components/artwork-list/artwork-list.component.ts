@@ -5,11 +5,12 @@ import { ArtworkRowComponent } from '../artwork-row/artwork-row.component';
 import { ApiServiceService } from '../../services/api-service.service';
 import { ArtworkFilterPipe } from '../../pipes/artwork-filter.pipe';
 import { FilterService } from '../../services/filter.service';
-import { Subscription, debounceTime, filter, forkJoin, from } from 'rxjs';
+import { Subscription, debounceTime,  from } from 'rxjs';
 import { UsersService } from '../../services/users.service';
 import { CommonModule } from '@angular/common';
 import { map, switchMap, tap } from 'rxjs/operators';
 import { ActivatedRoute } from '@angular/router';
+import { PaginationComponent } from '../pagination/pagination.component';
 @Component({
   selector: 'app-artwork-list',
   standalone: true,
@@ -18,6 +19,7 @@ import { ActivatedRoute } from '@angular/router';
     ArtworkRowComponent,
     ArtworkFilterPipe,
     CommonModule,
+    PaginationComponent
   ],
   templateUrl: './artwork-list.component.html',
   styleUrl: './artwork-list.component.css',
@@ -29,7 +31,8 @@ export class ArtworkListComponent implements OnInit, OnDestroy {
   private subArt: Subscription = new Subscription();
   private subFilter: Subscription = new Subscription();
   private subPagination: Subscription = new Subscription();
-  pagNum: number=1;
+  currentPage: number = 1;
+  totalPages:number = 100;
 
   constructor(
     private artService: ApiServiceService,
@@ -44,9 +47,9 @@ export class ArtworkListComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.subPagination = this.route.params.subscribe(page => {
-      this.pagNum = +page['page'];
-    })
+    /*this.subPagination = this.route.params.subscribe(page => {
+      this.currentPage = +page['page'];
+    })*/
 
     console.log('entra a list normal');
     if (this.usersService.getUserId()) {
