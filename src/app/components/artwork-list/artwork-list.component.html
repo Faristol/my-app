@@ -1,17 +1,31 @@
 <div class="container">
-<h1>Artworks List</h1>
-    <div class="row">
+  <h1>Artworks List</h1>
+  <div class="row">
     @for (artwork of quadres | artworkFilter:filter; track artwork.id) {
-        <div class="col">
-          <app-artwork [artwork]="artwork" (likeChanged)="toggleLike($event, artwork)"></app-artwork>
-        </div>
+    <div class="col">
+      <app-artwork
+        [artwork]="artwork"
+        [isLikeEnabled]="isLikeEnabled"
+        (likeChanged)="toggleLike($event, artwork)"
+      ></app-artwork>
+    </div>
     }
+
     <table class="table">
-      <tbody>
+      @if(loading) {
+      <div *ngIf="loading" class="loading-overlay">
+        <div class="spinner"></div>
+      </div>
+
+      }@else{
+
+      <tbody *ngIf="isLikeEnabled">
         @for (artwork of quadres; track artwork.id) {
-              <tr app-artwork-row [artwork]="artwork"></tr>
+        <tr app-artwork-row [artwork]="artwork"></tr>
         }
-        </tbody>
+      </tbody>
+
+      }
     </table>
-</div>
+  </div>
 </div>

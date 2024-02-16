@@ -106,6 +106,17 @@ export class UsersService {
 
     promiseFavorites.then(() => this.getFavorites(data.session.user.id));
   }
+  async removeFavorite(artwork_id: string): Promise<any> {
+    let { data, error } = await this.supaClient.auth.getSession();
+    let promiseFavorites: Promise<boolean> = this.supaClient.from('favorites').delete().eq('uid', data.session.user.id).eq('artwork_id', artwork_id);
+    promiseFavorites.then(() => this.getFavorites(data.session.user.id));
+    
+  }
+  async getFavoritesId(): Promise<any> {
+    let { data, error } = await this.supaClient.auth.getSession();
+    let promiseFavorites: Promise<any> = this.supaClient.from('favorites').select('artwork_id').eq('uid', data.session.user.id);
+    return promiseFavorites.then((data) => data.data.map((artwork:any) => artwork.artwork_id));
+  }
   setUserId(id: string) {
     localStorage.setItem('userId', id);
   }

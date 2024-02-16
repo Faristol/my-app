@@ -10,7 +10,9 @@ const url = `https://api.artic.edu/api/v1/artworks`;
 @Injectable({
   providedIn: 'root'
 })
+
 export class ApiServiceService {
+  
 
 
   artworksSubject: Subject<IArtwork[]> = new Subject();
@@ -27,12 +29,9 @@ export class ApiServiceService {
     return this.artworksSubject;
   }
 
-  public filterArtWorks(filter:string): void{
-    this.http.get<{ data: IArtwork[] }>(`${url}/search?q=${filter}&fields=id,description,title,image_id`).pipe(
+  public filterArtWorks(filter:string): Observable<IArtwork[]> {
+    return this.http.get<{ data: IArtwork[] }>(`${url}/search?q=${filter}&fields=id,description,title,image_id`).pipe(
       map(response => response.data)
-    ).subscribe((artworks) => {
-        this.artworksSubject.next(artworks);
-    }
     );
   }
 
@@ -51,4 +50,9 @@ export class ApiServiceService {
   }
 
 
+  
+
+
+
 }
+

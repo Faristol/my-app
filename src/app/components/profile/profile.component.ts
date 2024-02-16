@@ -11,7 +11,8 @@ import {
 import { UsersService } from '../../services/users.service';
 import { IUser } from '../../interfaces/user';
 import { map } from 'rxjs';
-
+import { MatDialog } from '@angular/material/dialog';
+import { MatDialogComponent } from '../mat-dialog/mat-dialog.component';
 @Component({
   selector: 'app-profile',
   standalone: true,
@@ -20,24 +21,36 @@ import { map } from 'rxjs';
   styleUrl: './profile.component.css',
 })
 export class ProfileComponent implements OnInit {
-  renderize = true;
+  renderize = (this.userService.getUserId()?true : false);
   constructor(
     private formBuilder: FormBuilder,
-    private userService: UsersService
+    private userService: UsersService,private matDialog: MatDialog
   ) {
-    if (!this.userService.getUserId()) {
+    console.log(this.renderize)
+    console.log(this.userService.getUserId())
+    
       //mostrem un pop up indiquant q per a accedir a les favorites ha d'estar registrat
-      console.log('no user');
-      this.renderize = false;
-    } else {
+     
       this.crearFormulario();
-    }
+    
   }
 
   formulario!: FormGroup;
 
   ngOnInit(): void {
-    if (this.userService.getUserId()) {
+    if(!this.userService.getUserId()){
+      this.matDialog.open(MatDialogComponent, {
+        height: 'min-content',
+        width: 'max-content',
+        data: {
+          title: 'Content not available',
+          content:
+            'You need to login to see your profile',
+        },
+      });
+
+    }
+    
       this.userService.isLogged();
       this.userService.userSubject
         .pipe(
@@ -52,7 +65,7 @@ export class ProfileComponent implements OnInit {
           })
         )
         .subscribe((profile) => this.formulario?.setValue(profile));
-    }
+    
   }
 
   crearFormulario() {

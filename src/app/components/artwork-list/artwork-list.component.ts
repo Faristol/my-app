@@ -1,74 +1,147 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { IArtwork } from '../../interfaces/i-artwork';
 import { ArtworkComponent } from '../artwork/artwork.component';
 import { ArtworkRowComponent } from '../artwork-row/artwork-row.component';
 import { ApiServiceService } from '../../services/api-service.service';
 import { ArtworkFilterPipe } from '../../pipes/artwork-filter.pipe';
 import { FilterService } from '../../services/filter.service';
-import { debounceTime, filter } from 'rxjs';
+import { Subscription, debounceTime, filter, forkJoin, from } from 'rxjs';
 import { UsersService } from '../../services/users.service';
-
+import { CommonModule } from '@angular/common';
+import { map, switchMap, tap } from 'rxjs/operators';
+import { ActivatedRoute } from '@angular/router';
 @Component({
   selector: 'app-artwork-list',
   standalone: true,
-  imports: [ArtworkComponent,
+  imports: [
+    ArtworkComponent,
     ArtworkRowComponent,
-    ArtworkFilterPipe
+    ArtworkFilterPipe,
+    CommonModule,
   ],
   templateUrl: './artwork-list.component.html',
-  styleUrl: './artwork-list.component.css'
+  styleUrl: './artwork-list.component.css',
 })
-export class ArtworkListComponent implements OnInit {
+export class ArtworkListComponent implements OnInit, OnDestroy {
+  public isLikeEnabled = this.usersService.getUserId() ? true : false;
+  protected loading: boolean = false;
+  protected isLogged = this.usersService.getUserId() ? true : false;
+  private subArt: Subscription = new Subscription();
+  private subFilter: Subscription = new Subscription();
+  private subPagination: Subscription = new Subscription();
+  pagNum: number=1;
 
-  constructor(private artService: ApiServiceService,
+  constructor(
+    private artService: ApiServiceService,
     private filterService: FilterService,
-    private usersService: UsersService
-
-  ) {
+    private usersService: UsersService,
+    private route:ActivatedRoute
+  ) {}
+  ngOnDestroy(): void {
+    this.subArt.unsubscribe();
+    this.subFilter.unsubscribe();
+    this.subPagination.unsubscribe();
   }
 
   ngOnInit(): void {
-    console.log(this.onlyFavorites);
-   
+    this.subPagination = this.route.params.subscribe(page => {
+      this.pagNum = +page['page'];
+    })
 
-    if (this.onlyFavorites != 'favorites') {
-      this.artService.getArtWorks().pipe(
-        // demanar i marcar les favorites
+    console.log('entra a list normal');
+    if (this.usersService.getUserId()) {
+      //ens carreguem els ids dels arts favorits
+      let favorites: string[];
+      this.subArt = from(this.usersService.getFavoritesId())
+        .pipe(
+          tap((favoritesList: string[]) => {
+            favorites = favoritesList;
+            this.loading = true;
+          }),
+          switchMap(() => {
+            return this.artService.getArtWorks();
+          })
+        )
+        .subscribe((allArtworks: IArtwork[]) => {
+          this.quadres = allArtworks.map((artwork: IArtwork) => {
+            if (favorites.includes(artwork.id + '')) {
+              artwork.like = true;
+            }
+            return artwork;
+          });
+          this.loading = false;
+        });
+      this.filterSearchFavorites();
+    } else {
+      this.subArt = this.artService
+        .getArtWorks()
+        .pipe(
+          tap(() => {
+            this.loading = true;
+          })
+        )
+        .subscribe((artworkList: IArtwork[]) => {
+          this.loading = false;
+          this.quadres = artworkList;
+        });
+      this.filterSearch();
+    }
+  }
+
+  filterSearch() {
+    this.subFilter = this.filterService.searchFilter
+      .pipe(
+        debounceTime(500),
+        tap(() => {
+          this.loading = true;
+        }),
+        switchMap((filter) => this.artService.filterArtWorks(filter))
       )
-        .subscribe((artworkList: IArtwork[]) => this.quadres = artworkList);
-    }
-    else {
-      // Demanar les favorites
-      
-      if(!this.usersService.getUserId()){
-        //mostrem un pop up indiquant q per a accedir a les favorites ha d'estar registrat
-        console.log("no user")
-
-
-      }else{
-        this.artService.getArtworksFromIDs(['3752', '11294', '6010'])
-        .subscribe((artworkList: IArtwork[]) => this.quadres = artworkList);
-        
-      }
-      
-    }
-
-
-    this.filterService.searchFilter.pipe(
-      //filter(f=> f.length> 4 || f.length ===0),
-      debounceTime(500)
-    ).subscribe(filter => this.artService.filterArtWorks(filter));
-
+      .subscribe((filteredArtworks) => {
+        this.quadres = filteredArtworks;
+        this.loading = false;
+      });
+  }
+  filterSearchFavorites() {
+    this.subFilter = this.filterService.searchFilter
+      .pipe(
+        debounceTime(500),
+        tap(() => {
+          this.loading = true;
+        }),
+        switchMap((filter) => {
+          return this.artService.filterArtWorks(filter);
+        }),
+        switchMap((filteredArtworks) => {
+          return from(this.usersService.getFavoritesId()).pipe(
+            map((favorites) => ({ filteredArtworks, favorites }))
+          );
+        })
+      )
+      .subscribe(({ filteredArtworks, favorites }) => {
+        this.quadres = filteredArtworks.map((artwork: IArtwork) => {
+          if (favorites.includes(artwork.id+"")) {
+            artwork.like = true;
+          }
+          return artwork;
+        });
+        this.loading = false;
+      })
   }
 
   toggleLike($event: boolean, artwork: IArtwork) {
     console.log($event, artwork);
     artwork.like = !artwork.like;
-    this.usersService.setFavorite(artwork.id + "")
+    console.log(artwork.like);
+    if (artwork.like) {
+      //si fa like el posem com a favorite
+      this.usersService.setFavorite(artwork.id + '');
+    } else {
+      //si no es el posem com no favorite
+      this.usersService.removeFavorite(artwork.id + '');
+    }
   }
 
-  quadres: IArtwork[] = [];
-  filter: string = '';
-  @Input() onlyFavorites: string = '';
-
+  protected quadres: IArtwork[] = [];
+  protected filter: string = '';
 }

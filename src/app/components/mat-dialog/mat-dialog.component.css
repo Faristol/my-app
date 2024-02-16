@@ -1,0 +1,12 @@
+.dialog{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    row-gap: 2em;
+    padding: 2em;
+}
+.title-dialog{
+    color: black;
+    font-weight: bold;
+}
