@@ -9,7 +9,7 @@ import { ArtworkListFavoritesComponent } from './components/artwork-list-favorit
 export const routes: Routes = [
   {path: 'artworks', component: ArtworkListComponent},
   {path: 'artworks/favorites', component: ArtworkListFavoritesComponent},
-  {path: 'artworks/:num', component: ArtworkComponent},
+  {path: 'artworks/:page', component: ArtworkListComponent},
   {path: 'artwork/:id', component: ArtworkComponent},
   {path: 'profile', component: ProfileComponent},
   {path: 'favorites', redirectTo: 'artworks/favorites'},

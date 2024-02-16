@@ -32,12 +32,11 @@ export class PaginationComponent {
 
   onChange(event: Event) {
     const numValue = (event.target as HTMLInputElement).value;
+    console.log(numValue)
 
     if (!isNaN(Number(numValue))) {
-      // Verificar si es un número
-      const num = +numValue; // Convertir a número
+      const num = +numValue; 
       if (num >= 1 && num <= this.totalPages) {
-        // Verificar rango
         this.router.navigate(['/artworks', num]);
       }
     }

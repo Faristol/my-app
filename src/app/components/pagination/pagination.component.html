@@ -2,5 +2,5 @@
     <button class="but" mat-raised-button color="primary"  (click)="previousPage()" [disabled]="currentPage === 1">Previous</button>
     <span>{{ currentPage }} / {{ totalPages }}</span>
     <button mat-raised-button color="primary" (click)="nextPage()" [disabled]="currentPage === totalPages">Next</button>
-    <input matInput type="text" class="input" />
+    <input matInput type="text" class="input" placeholder="Page" (change)="onChange($event)" />
 </mat-card>

@@ -1,5 +1,6 @@
 .pagination {
-    width: 50%;
+    width: 800px;
+    opacity: 0.9;
     margin: 0 auto; /* Centrar horizontalmente */
     display: flex;
     justify-content: center;
