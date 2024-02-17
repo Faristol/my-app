@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 import { Observable, Subject, from, tap } from 'rxjs';
 import { IUser } from '../interfaces/user';
 import { environment } from '../../environments/environment.development';
+import { FormGroup } from '@angular/forms';
 
 const emptyUser: IUser = {
   id: '0',
@@ -70,6 +71,19 @@ export class UsersService {
         this.userSubject.next(profile.data[0]);
       });
   }
+  async setProfile(formulario: FormGroup) {
+    const formData = formulario.value;
+      const { data: updatedData, error: updateError } = await this.supaClient
+        .from('profiles')
+        .update({
+          username: formData.username,
+          full_name: formData.full_name,
+          avatar_url: formData.avatar_url,
+          website: formData.website,
+        })
+        .eq('id', this.getUserId());
+    }
+  
 
   async isLogged() {
     let { data, error } = await this.supaClient.auth.getSession();
