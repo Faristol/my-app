@@ -36,9 +36,10 @@ export class ApiServiceService {
     return this.artworksSubject;
   }
   public getArtWorksByPage(page : number ): Observable<{ artworks: IArtwork[], totalPages: number }> {
-    return this.http.get<{ data: IArtwork[], pagination: { total_pages: number } }>(`${url}/?page=${page}&limit=10`).pipe(
+    return this.http.get<{ data: IArtwork[], pagination: { total_pages: number } }>(`${url}?page=${page}&limit=10`).pipe(
       map(response => {
         const artworks = response.data;
+        console.log(artworks);
         const totalPages = response.pagination.total_pages;
         return { artworks, totalPages };
       })
@@ -52,13 +53,16 @@ export class ApiServiceService {
       )
       .pipe(map((response) => response.data));
   }
-  public filterArtWorksWithPagination(filter: string, page: number): Observable<{artworks : IArtwork[], totalPages:number}> {
-    return this.http
+  public filterArtWorksWithPagination( page: number,filter: string): Observable<{artworks : IArtwork[], totalPages:number}> {
+    
+      filter = filter.trim();
+      return this.http
       .get<{ data: IArtwork[], pagination: { total_pages: number } }>(
-        `${url}/search?q=${filter}&fields=id,description,title,image_id?page=${page}&limit=10`
+        `${url}/search?q=${filter}&fields=id,description,title,image_id&page=${page}&limit=10`
       ).pipe(map(response => {
         const artworks = response.data;
-        const totalPages = response.pagination.total_pages;
+        console.log(artworks)
+        const totalPages = response.pagination.total_pages > 100 ? 100 : response.pagination.total_pages;
         return { artworks, totalPages };
       }));
   }

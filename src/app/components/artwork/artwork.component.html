@@ -1,16 +1,76 @@
-{{id}}
-    <div class="card" style="width: 18rem;">
-      
-        <img src="https://www.artic.edu/iiif/2/{{artwork.image_id}}/full/843,/0/default.jpg" class="card-img-top" alt="...">
-        <div *ngIf="isLikeEnabled" class="heart-icon" (mouseover)="mouseover = true" (mouseleave)="mouseover = false" (click)="toggleLike()">
-          {{ artwork.like || mouseover ? '♥' : '♡'}}
-        </div>
-        <div class="card-body">
-          <h5 class="card-title">{{artwork.title}}</h5>
-          <p class="card-text" [innerHTML]="artwork.description"></p>
-          <a [routerLink]="['/artwork',artwork.id]" class="btn btn-primary">Details</a>
+@if(!id){
+<div class="card" style="width: 18rem">
+  <img
+    src="https://www.artic.edu/iiif/2/{{
+      artwork.image_id
+    }}/full/843,/0/default.jpg"
+    class="card-img-top"
+    alt="..."
+  />
+  <div
+    *ngIf="isLikeEnabled"
+    class="heart-icon"
+    (mouseover)="mouseover = true"
+    (mouseleave)="mouseover = false"
+    (click)="toggleLike()"
+  >
+    {{ artwork.like || mouseover ? "♥" : "♡" }}
+  </div>
+  <div class="card-body">
+    <h5 class="card-title">{{ artwork.title }}</h5>
+    <p class="card-text" [innerHTML]="artwork.description"></p>
+    <a [routerLink]="['/artwork', artwork.id]" class="btn btn-primary"
+      >Details</a
+    >
+  </div>
+</div>
 
-        </div>
-      </div>
+}@else{
+<mat-card style="width: 50%; margin: 0 auto;background-color: #c8dff6;">
+  <mat-card-header>
+    <img
+      style="width: 50%"
+      mat-card-image
+      src="https://www.artic.edu/iiif/2/{{
+        artwork.image_id
+      }}/full/843,/0/default.jpg"
+      class="card-img-top"
+      alt="..."
+    />
+    <mat-card-title>{{ artworkDetails.title }}</mat-card-title>
+    <mat-card-subtitle
+      ><strong>Id: </strong>{{ artworkDetails.id }}</mat-card-subtitle
+    >
+    <mat-card-subtitle
+      ><strong>Publish date: </strong
+      >{{ artworkDetails.date_display }}</mat-card-subtitle
+    >
+    <mat-card-subtitle
+      ><strong>Started: </strong
+      >{{ artworkDetails.date_start }}</mat-card-subtitle
+    >
+    <mat-card-subtitle
+      ><strong>Finished: </strong
+      >{{ artworkDetails.date_end }}</mat-card-subtitle
+    >
+  </mat-card-header>
+  <mat-card-content>
+    <p><strong>Credit Line:</strong> {{ artworkDetails.credit_line }}</p>
+    <p><strong>Description:</strong></p>
+    <div [innerHTML]="artworkDetails.description"></div>
+    <p>
+      <strong>Place of Origin:</strong> {{ artworkDetails.place_of_origin }}
+    </p>
+    <p><strong>Medium Display:</strong> {{ artworkDetails.medium_display }}</p>
+    <p>
+      <strong>Provenance Text:</strong> {{ artworkDetails.provenance_text }}
+    </p>
+    <p>
+      <strong>Exhibition History:</strong>
+    </p>
+    <div [innerHTML]="artworkDetails.exhibition_history"></div>
+    
+  </mat-card-content>
+</mat-card>
 
-
+}

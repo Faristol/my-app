@@ -21,51 +21,49 @@ import { MatDialogComponent } from '../mat-dialog/mat-dialog.component';
   styleUrl: './profile.component.css',
 })
 export class ProfileComponent implements OnInit {
-  renderize = (this.userService.getUserId()?true : false);
+  renderize = this.userService.getUserId() ? true : false;
   constructor(
     private formBuilder: FormBuilder,
-    private userService: UsersService,private matDialog: MatDialog
+    private userService: UsersService,
+    private matDialog: MatDialog
   ) {
-    console.log(this.renderize)
-    console.log(this.userService.getUserId())
-    
-      //mostrem un pop up indiquant q per a accedir a les favorites ha d'estar registrat
-     
-      this.crearFormulario();
-    
+    console.log(this.renderize);
+    console.log(this.userService.getUserId());
+
+    //mostrem un pop up indiquant q per a accedir a les favorites ha d'estar registrat
+
+    this.crearFormulario();
   }
 
   formulario!: FormGroup;
 
   ngOnInit(): void {
-    if(!this.userService.getUserId()){
-      this.matDialog.open(MatDialogComponent, {
-        height: 'min-content',
-        width: 'max-content',
-        data: {
-          title: 'Content not available',
-          content:
-            'You need to login to see your profile',
-        },
-      });
-
-    }
-    
-      this.userService.isLogged();
-      this.userService.userSubject
-        .pipe(
-          map((p: IUser) => {
-            return {
-              id: p.id,
-              username: p.username,
-              full_name: p.full_name,
-              avatar_url: p.avatar_url,
-              website: p.website,
-            };
-          })
-        )
-        .subscribe((profile) => this.formulario?.setValue(profile));
-    
+    this.userService.isLogged().then((logged) => {
+      if (logged) {
+        this.userService.userSubject
+          .pipe(
+            map((p: IUser) => {
+              return {
+                id: p.id,
+                username: p.username,
+                full_name: p.full_name,
+                avatar_url: p.avatar_url,
+                website: p.website,
+              };
+            })
+          )
+          .subscribe((profile) => this.formulario?.setValue(profile));
+      } else {
+        this.matDialog.open(MatDialogComponent, {
+          height: 'min-content',
+          width: 'max-content',
+          data: {
+            title: 'Content not available',
+            content: 'You need to login to see your profile',
+          },
+        });
+      }
+    });
   }
 
   crearFormulario() {

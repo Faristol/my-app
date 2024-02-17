@@ -42,40 +42,43 @@ export class ArtworkListFavoritesComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     console.log(this.isLikeEnabled);
     console.log("entra a favorites")
-    if (!this.usersService.getUserId()) {
+    this.usersService.isLogged().then((logged) => {
       //mostrem un pop up indiquant q per a accedir a les favorites ha d'estar registrat
-      console.log('no user');
-      this.matDialog.open(MatDialogComponent, {
-        height: 'min-content',
-        width: 'max-content',
-        data: {
-          title: 'Content not available',
-          content: 'You need to login to see your favorites',
-        },
-      });
-    } else {
-     this.subArt= from(this.usersService.getFavoritesId())
-        .pipe(
-          switchMap((idList: string[]) => {
-            return this.artService.getArtworksFromIDs(idList);
-          }),
-          tap(() => {
-            this.loading = true;
-          })
-        )
-        .subscribe((artworkList: IArtwork[]) => {
-          this.quadres = artworkList;
-          this.quadres.map((quadre) => {
-            quadre.like = true;
-          });
-          this.loading = false;
+      if(!logged){
+        this.matDialog.open(MatDialogComponent, {
+          height: 'min-content',
+          width: 'max-content',
+          data: {
+            title: 'Content not available',
+            content: 'You need to login to see your favorites',
+          },
         });
+
+      }else {
+        this.subArt= from(this.usersService.getFavoritesId())
+           .pipe(
+             switchMap((idList: string[]) => {
+               return this.artService.getArtworksFromIDs(idList);
+             }),
+             tap(() => {
+               this.loading = true;
+             })
+           )
+           .subscribe((artworkList: IArtwork[]) => {
+             this.quadres = artworkList;
+             this.quadres.map((quadre) => {
+               quadre.like = true;
+             });
+             this.loading = false;
+           });
+           this.filterSearch();
+      
+    } 
       /*this.artService
       .getArtworksFromIDs()
       .subscribe((artworkList: IArtwork[]) => (this.quadres = artworkList));
   }*/
-      this.filterSearch();
-    }
+    });
   }
   public filterSearch(): void {
     this.loading = true;

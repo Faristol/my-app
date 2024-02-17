@@ -16,11 +16,15 @@ export class PaginationComponent {
   currentPage!: number;
   @Input() totalPages!: number;
 
-  constructor(private route: ActivatedRoute, private router: Router) {}
+
+
+  constructor(private route: ActivatedRoute, private router: Router) {
+
+  }
 
   previousPage() {
     if (this.currentPage > 1) {
-      this.router.navigate(['/artworks', this.currentPage - 1]);
+      this.router.navigate(['/artworks',this.currentPage - 1]);
     }
   }
 
@@ -37,7 +41,7 @@ export class PaginationComponent {
     if (!isNaN(Number(numValue))) {
       const num = +numValue; 
       if (num >= 1 && num <= this.totalPages) {
-        this.router.navigate(['/artworks', num]);
+        this.router.navigate(['/artworks',num]);
       }
     }
   }

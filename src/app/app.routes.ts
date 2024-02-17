@@ -7,7 +7,7 @@ import { RegisterComponent } from './components/register/register.component';
 import { ArtworkListFavoritesComponent } from './components/artwork-list-favorites/artwork-list-favorites.component';
 
 export const routes: Routes = [
-  {path: 'artworks', component: ArtworkListComponent},
+  { path: 'artworks', component: ArtworkListComponent },
   {path: 'artworks/favorites', component: ArtworkListFavoritesComponent},
   {path: 'artworks/:page', component: ArtworkListComponent},
   {path: 'artwork/:id', component: ArtworkComponent},
