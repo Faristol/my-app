@@ -142,19 +142,31 @@ export class UsersService {
   }
 
   async signUp(email: string, password: string): Promise<any> {
-    const { data, error } = await this.supaClient.auth.signUp({
-      email,
-      password,
-    });
-    if (error) {
+    try {
+      const { data, error } = await this.supaClient.auth.signUp({
+        email,
+        password,
+      });
+  
+      if (error) {
+        console.log(error);
+        return false;
+      }
+      console.log(data)
+  
+      if (data) {
+        console.log(data.user.aud);
+        if (data.user.aud === 'authenticated') {
+          return 'authenticated';
+        }
+        return true;
+      }
+  
+      return false;
+    } catch (error) {
+      console.error("Error during signUp:", error);
       return false;
     }
-    if (data) {
-      this.setUserId(data.session.user.id);
-      this.getProfile(data.session.user.id);
-      return true;
-    }
-    return false;
   }
 }
 

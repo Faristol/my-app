@@ -16,18 +16,19 @@ import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { UsersService } from '../../services/users.service';
 
-
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [ MatFormFieldModule,
+  imports: [
+    MatFormFieldModule,
     MatInputModule,
     MatCardModule,
     ReactiveFormsModule,
     MatButtonModule,
-    MatIconModule,],
+    MatIconModule,
+  ],
   templateUrl: './register.component.html',
-  styleUrl: './register.component.css'
+  styleUrl: './register.component.css',
 })
 export class RegisterComponent {
   isSubmitted = false;
@@ -86,7 +87,7 @@ export class RegisterComponent {
     public userServices: UsersService,
     @Inject(ToastrService) private toastr: ToastrService
   ) {}
- async onSubmit() {
+  async onSubmit() {
     this.isSubmitted = true;
     if (this.registerForm.invalid) {
       this.toastr.warning('Please fill in all fields correctly', 'Warning', {
@@ -99,27 +100,38 @@ export class RegisterComponent {
     const lastname = this.registerForm.value.lastname;
     const email = this.registerForm.value.email;
     const password = this.registerForm.value.password;
-    if ( firstname && lastname && password && email) {
+    if (firstname && lastname && password && email) {
       let signup = await this.userServices.signUp(email, password);
-     if(signup){
-      this.toastr.success('Registration successful', 'Success', {
-        easing: 'ease-out',
-        timeOut: 2000,
-      });
-      this.router.navigate(['favorites']);
-
-     }else{
-      this.toastr.error(`Registration failed`, 'Error', {
-        easing: 'ease-out',
-        timeOut: 2000,
-      });
-
-     }
+      console.log(signup);
+      if (signup === 'authenticated') {
+        this.toastr.success(
+          'The user already exists. Please login', 'Success',
+          {
+            easing: 'ease-out',
+            timeOut: 2000,
+          }
+        );
+        this.router.navigate(['login']);
+      } else if (signup) {
+        this.toastr.success(
+          'Registration successful, please confirm your email',
+          'Success',
+          {
+            easing: 'ease-out',
+            timeOut: 2000,
+          }
+        );
+        this.router.navigate(['login']);
+      } else {
+        console.log(signup);
+        this.toastr.error(`Registration failed`, 'Error', {
+          easing: 'ease-out',
+          timeOut: 2000,
+        });
+      }
     }
   }
   login() {
     this.router.navigate(['login']);
-    
   }
-
 }
